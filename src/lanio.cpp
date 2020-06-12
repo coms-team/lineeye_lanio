@@ -35,7 +35,8 @@ std::string LanIO::get_ip_address(int i) {
 PYBIND11_MODULE(lineeye_lanio, m) {
     py::class_<lineeye::LanIO>(m, "LanIO")
         .def(py::init<>())
-        .def("get_num_devices", &lineeye::LanIO::get_num_devices);
+        .def("get_num_devices", &lineeye::LanIO::get_num_devices)
+        .def("get_ip_address", &lineeye::LanIO::get_ip_address);
     py::register_exception<lineeye::LanIOException>(m, "LanIOException");
 }
 // clang-format on

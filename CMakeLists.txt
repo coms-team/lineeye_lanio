@@ -14,8 +14,8 @@ find_package(catkin REQUIRED)
 
 # use python2 forcefully
 # see https://pybind11.readthedocs.io/en/stable/faq.html#inconsistent-detection-of-python-version-in-cmake-and-pybind11
-find_package(PythonInterp)
-find_package(PythonLibs)
+#find_package(PythonInterp)
+#find_package(PythonLibs)
 add_subdirectory(pybind11)
 
 
