@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(lineeye_lanio_py)
+project(lineeye_lanio)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++14)
@@ -7,7 +7,7 @@ add_compile_options(-std=c++14)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED COMPONENTS message_generation std_msgs std_srvs roscpp)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -65,11 +65,11 @@ add_custom_command(
 # )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+add_service_files(
+  FILES
+  Set.srv
+  SetBitwise.srv
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -79,10 +79,10 @@ add_custom_command(
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  std_msgs  # Or other packages containing msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -128,12 +128,13 @@ catkin_package(
 ## Your package locations should be listed before other locations
 include_directories(
  include
+ sample
  libLANIO
  ${catkin_INCLUDE_DIRS}
 )
 
-add_library(lineeye_lanio src/lanio.cpp)
-target_link_libraries(lineeye_lanio ${catkin_LIBRARIES} LANIO)
+add_library(lineeye_lanio SHARED src/lanio.cpp)
+target_link_libraries(lineeye_lanio LANIO)
 add_dependencies(lineeye_lanio liblanio_installer)
 
 #pybind11_add_module(lineeye_lanio src/lanio.cpp)
@@ -144,7 +145,7 @@ add_dependencies(lineeye_lanio liblanio_installer)
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/lineeye_lanio_py.cpp
+#   src/${PROJECT_NAME}/lineeye_lanio.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -155,7 +156,7 @@ add_dependencies(lineeye_lanio liblanio_installer)
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/lineeye_lanio_py_node.cpp)
+add_executable(lineeye_lanio_node sample/lanio_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -165,12 +166,10 @@ add_dependencies(lineeye_lanio liblanio_installer)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+#add_dependencies(lineeye_lanio_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} lineeye_lanio)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(lineeye_lanio_node ${catkin_LIBRARIES} lineeye_lanio)
 
 #############
 ## Install ##
@@ -219,7 +218,7 @@ add_dependencies(lineeye_lanio liblanio_installer)
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_lineeye_lanio_py.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_lineeye_lanio.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

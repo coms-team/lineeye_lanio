@@ -1,0 +1,4 @@
+int16 val
+---
+bool success
+string message
