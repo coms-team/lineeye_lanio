@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(lineeye_lanio_py)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-add_compile_options(-std=c++11)
+add_compile_options(-std=c++14)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -16,8 +16,17 @@ find_package(catkin REQUIRED)
 # see https://pybind11.readthedocs.io/en/stable/faq.html#inconsistent-detection-of-python-version-in-cmake-and-pybind11
 #find_package(PythonInterp)
 #find_package(PythonLibs)
-add_subdirectory(pybind11)
+#add_subdirectory(pybind11)
 
+add_custom_target(liblanio_installer
+  SOURCES /usr/local/lib/libLANIO.so
+)
+add_custom_command(
+  OUTPUT /usr/local/lib/libLANIO.so
+  DEPENDS libLANIO/libLANIO_install64.sh
+  COMMAND "sudo" "./libLANIO_install64.sh"
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/libLANIO"
+)
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -105,10 +114,10 @@ add_subdirectory(pybind11)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES lineeye_lanio_py
-#  CATKIN_DEPENDS other_catkin_pkg
-#  DEPENDS system_lib
+  INCLUDE_DIRS include
+  LIBRARIES lineeye_lanio
+  #CATKIN_DEPENDS other_catkin_pkg
+  #DEPENDS other_system_lib
 )
 
 ###########
@@ -123,13 +132,15 @@ include_directories(
  ${catkin_INCLUDE_DIRS}
 )
 
+add_library(lineeye_lanio src/lanio.cpp)
+target_link_libraries(lineeye_lanio ${catkin_LIBRARIES} LANIO)
+add_dependencies(lineeye_lanio liblanio_installer)
+
 #pybind11_add_module(lineeye_lanio src/lanio.cpp)
-add_library(lineeye_lanio MODULE src/lanio.cpp)
-#target_link_libraries(lineeye_lanio PRIVATE pybind11::module ${catkin_LIBRARIES} LANIO)
-link_directories(/usr/local/lib/)
-target_link_libraries(lineeye_lanio pybind11::module ${catkin_LIBRARIES} LANIO)
-set_target_properties(lineeye_lanio PROPERTIES PREFIX "${PYTHON_MODULE_PREFIX}"
-                                    SUFFIX "${PYTHON_MODULE_EXTENSION}")
+#add_library(lineeye_lanio MODULE src/lanio.cpp)
+# target_link_libraries(lineeye_lanio pybind11::module ${catkin_LIBRARIES} LANIO)
+# set_target_properties(lineeye_lanio PROPERTIES PREFIX "${PYTHON_MODULE_PREFIX}"
+#                                     SUFFIX "${PYTHON_MODULE_EXTENSION}")
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
