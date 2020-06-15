@@ -134,7 +134,9 @@ include_directories(
 )
 
 add_library(lineeye_lanio SHARED src/lanio.cpp)
-target_link_libraries(lineeye_lanio LANIO)
+#***WARN***
+# this line causes SEGV in LELANIOInit() somehow. please link LANIO with your executable
+#target_link_libraries(lineeye_lanio LANIO) 
 add_dependencies(lineeye_lanio liblanio_installer)
 
 #pybind11_add_module(lineeye_lanio src/lanio.cpp)
@@ -169,7 +171,7 @@ add_executable(lineeye_lanio_node sample/lanio_node.cpp)
 #add_dependencies(lineeye_lanio_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} lineeye_lanio)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(lineeye_lanio_node ${catkin_LIBRARIES} lineeye_lanio)
+target_link_libraries(lineeye_lanio_node ${catkin_LIBRARIES} lineeye_lanio LANIO)
 
 #############
 ## Install ##
